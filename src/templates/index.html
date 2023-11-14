@@ -1,0 +1,689 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <script src='{% static "d3-7.8.3/package/dist/d3.min.js" %}'></script>
+    <!-- <script type="text/javascript" src='{% static "nnBoundary.json" %}'></script> -->
+
+    <title>DIDSR Explainable AI/ML</title>
+
+
+    <!-- Custom styles for this template-->
+    <link rel="shortcut icon" type="image/png" href="{% static 'icon.ico' %}"/>
+    <link href='{% static "css/sb-admin-2.min.css" %}' rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <!-- <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"></nav> -->
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="row" style="display:block; margin-top: 0.75rem;">
+                    <div class="col-xl-3 col-md-6 mb-4" style="width: 100% !important; max-width: 100% !important; display: flex; margin-bottom: 1rem!important;">
+                        <div class="card border-left-primary shadow h-100 py-2" style="width: 100% !important; max-width: 100% !important; display: flex; padding-bottom: .15rem!important; padding-top: .15rem!important;">
+                            <div class="card-body" style="width: 100% !important; max-width: 100% !important; display: flex; padding: 0.5rem" >
+                                <div class="row no-gutters align-items-center" style="width: 100% !important; max-width: 100% !important; display: flex;">
+                    <div class="d-sm-flex align-items-center justify-content-between" style="width: 100%;">
+                        <h1 class="h3 mb-0 text-gray-800">DIDSR DEMO: Data Exploration and Model Optimization</h1>
+                        <div id="mainMetrics" class="d-sm-flex align-items-center justify-content-between" style="width : 50%; margin-right:1%; visibility: hidden;">
+                        <div id = "training-table-main">
+                            <table class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Train</th>
+                                      </tr>
+                                    <tr>
+                                      <th>Specificity</th>
+                                      <th>Sensitivity</th>
+                                    </tr>
+                                  </thead>
+                                <tbody>
+                                  <tr>
+                                    <td id="trainSpecificityMain">empty</td>
+                                    <td id="trainSensitivityMain">empty</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                        </div>
+                        <div id = "testing-table-main">
+                            <table class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Test</th>
+                                    </tr>
+                                    <tr>
+                                      <th>Specificity</th>
+                                      <th>Sensitivity</th>
+                                    </tr>
+                                  </thead>
+                                <tbody>
+                                  <tr>
+                                    <td id="testSpecificityMain">empty</td>
+                                    <td id="testSensitivityMain">empty</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                        </div>
+                    
+                        <a data-modal-target="#modal" href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "EvaluateButton" style="min-width: 110px;"><i
+                            class="fas fa-download fa-sm text-white-50"></i> Evaluate</a>
+                        <!-- <a data-modal-target="#nnmodal" href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "nnButton" style="min-width: 110px;"><i
+                            class="fas fa-download fa-sm text-white-50"></i> NN</a> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4" style = "margin-bottom: 1rem!important;">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body" style="padding-top: 0.25rem; padding-bottom: 0.25rem; padding-left: 0.25rem; padding-right: 0px;">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Training Data</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-600">
+                                                <div class="slidecontainer" width = "100%" style = "display: table;">
+                                                    <span style="text-align: left; display: table-cell; min-width: 100px;">
+                                                        <label for="TrainPosSlider">CLASS 1</label>
+                                                    </span>
+                                                    <span style="text-align: center; display: table-cell; width: 90%;">
+                                                        <input width = "100%" type="range" min="5" max="1000" value="500" class="slider" id="TrainPosSlider" oninput= "TrainPosRange.value = this.value">
+                                                    </span>
+                                                    <span style="text-align: center; display: table-cell; box-sizing: border-box; min-width: 50px;">
+                                                        <td><input id="TrainPosRange" type="number" min = "5" max="1000" value="500" step="1" oninput="TrainPosSlider.value=this.value" style="width: 80px;"/></td>
+                                                    </span>
+                                                </div>
+                                                <div class="slidecontainer" width = "100%" style = "display: table;">
+                                                    <span style="text-align: left; display: table-cell; min-width: 100px;">
+                                                        <label for="TrainNegSlider">CLASS 2</label>
+                                                    </span>
+                                                    <span style="text-align: center; display: table-cell; width: 90%;">
+                                                        <input width = "100%" type="range" min="5" max="1000" value="500" class="slider" id="TrainNegSlider" oninput= "TrainNegRange.value = this.value">
+                                                    </span>
+                                                    <span style="text-align: center; display: table-cell; box-sizing: border-box; min-width: 50px;">
+                                                        <td><input id="TrainNegRange" type="number" min = "5" max="1000" value="500"  oninput="TrainNegSlider.value=this.value" style="width: 80px;"/></td>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4" style = "margin-bottom: 1rem!important;">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body" style="padding-top: 0.25rem; padding-bottom: 0.25rem; padding-left: 0.25rem; padding-right: 0px;">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Testing Data</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-600">
+                                                <div class="slidecontainer" width = "100%" style = "display: table;">
+                                                    <span style="text-align: left; display: table-cell; min-width: 100px;">
+                                                        <label for="TestPosSlider">CLASS 1</label>
+                                                    </span>
+                                                    <span style="text-align: center; display: table-cell; width: 90%;">
+                                                        <input id="TestPosSlider" width = "100%" type="range" min="5" max="1000" value="500" class="slider"  oninput= "TestPosRange.value = this.value">
+                                                    </span>
+                                                    <span style="text-align: center; display: table-cell; box-sizing: border-box; min-width: 50px;">
+                                                        <td><input id="TestPosRange" type="number" min = "5" max="1000" value="500" step="1" oninput="TestPosSlider.value=this.value" style="width: 80px;"/></td>
+                                                    </span>
+                                                </div>
+                                                <div class="slidecontainer" width = "100%" style = "display: table;">
+                                                    <span style="text-align: left; display: table-cell; min-width: 100px;">
+                                                        <label for="TestNegSlider">CLASS 2</label>
+                                                    </span>
+                                                    <span style="text-align: center; display: table-cell; width: 90%;">
+                                                        <input id="TestNegSlider" width = "100%" type="range" min="5" max="1000" value="500" class="slider" oninput= "TestNegRange.value = this.value">
+                                                    </span>
+                                                    <span style="text-align: center; display: table-cell; box-sizing: border-box; min-width: 50px;">
+                                                        <td><input id="TestNegRange" type="number" min = "5" max="1000" value="500" oninput="TestNegSlider.value=this.value" style="width: 80px;"/></td>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4" style = "margin-bottom: 1rem!important;">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body" style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">MODEL
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-600" style = "width: 100%; display: table; margin-left: 15%;">
+                                                <span style="text-align: left; display: table-cell; width: 50%;">
+                                                    <input type="radio" id = "LDA" name="MODEL" value="LDA" checked>
+                                                    <label for="LDA">LDA</label>
+                                                </span>
+                                                <span style="text-align: left; display: table-cell; width: 50%;">
+                                                    <input type="radio" id = "QDA" name="MODEL" value="QDA">
+                                                    <label for="QDA">QDA</label>
+                                                </span>
+                                            </div>    
+                                            <div class="h5 mb-0 font-weight-bold text-gray-600" style = "width: 100%; display: table; margin-left: 15%;">
+                                                <span style="text-align: left; display: table-cell; width: 50%;">
+                                                    <input type="radio" id = "RF" name="MODEL" value="RF">
+                                                    <label for="RF">RFC</label>
+                                                </span>
+                                                <span style="text-align: left; display: table-cell; width: 50%;">
+                                                    <input type="radio" id = "MLP" name="MODEL" value="MLP">
+                                                    <label for="MLP">MLP</label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4" style = "margin-bottom: 1rem!important;">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body" style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Actions</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                                                    <a data-modal-target="#GenerateDatamodal" href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "GenerateDistributionButton" style="min-width: 110px; max-width: 120px;"><i
+                                                            class="fas fa-download fa-sm text-white-50"></i> Custom Distribution</a>
+                                                    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "GenerateNewDataButton" style="min-width: 110px; max-width: 120px;"><i
+                                                        class="fas fa-download fa-sm text-white-50"></i> Random<br>Distribution</a>
+                                                    <a href="#" data-modal-target="#HyperParamterModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "TrainModelButton" style="min-width: 110px; max-width: 120px;"><i
+                                                        class="fas fa-download fa-sm text-white-50"></i> Train<br>Model</a>
+
+
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Row -->
+
+                    <div class="row">
+
+                        <!-- Area Chart -->
+                        <div class="col-xl-6 col-lg-7">
+                            <div class="card shadow mb-2">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Training Data</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Dropdown Header:</div>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Something else here</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area" id="left_chart">
+                                        <!-- <canvas id="myAreaChar"></canvas> -->
+                                        <svg id="training_chart" width="100%" height="100%" style="border:1px solid rgb(145, 145, 145)"></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Area Chart -->
+                        <div class="col-xl-6 col-lg-7" height=700>
+                            <div class="card shadow mb-2">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Testing Data</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Dropdown Header:</div>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Something else here</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area" id="right_chart">
+                                        <!-- <canvas id="myAreaChar"></canvas> -->
+                                        <svg id="testing_chart" width="100%" height="100%" style="border:1px solid rgb(145, 145, 145)"></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <!-- <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Your Website 2021</span>
+                    </div>
+                </div>
+            </footer> -->
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+
+    <div class="modal" id="modal" style="width: 98%; max-width: 98%;">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Evaluation</h6>
+                <a data-close-button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "CloseButton" style="min-width: 110px;color: #fff;
+                background-color: #4e73df; border-color: #4e73df;text-align: center; vertical-align: middle;border-radius: .2rem;"><i
+                    class="fas fa-download fa-sm text-white-50"></i> Close</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-6 col-lg-7" style="height: 100%;">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Train</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id = "training-table" style="margin-bottom: 20px;">
+                                <table class = "styled-table" style = "width: 100%; max-width: 100%;">
+                                    <thead>
+                                      <tr>
+                                        <!-- <th rowspan="2">F1</th> -->
+                                        <th>Specificity</th>
+                                        <th>Sensitivity</th>
+                                        <th>AUC</th>
+                                        <th rowspan="2">Accuracy</th>
+                                      </tr>
+                                      <tr>
+                                        <th>Estimate</th>
+                                        <th>Estimate</th>
+                                        <th>Estimate</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <!-- <td id="trainF1"></td> -->
+                                        <td id="trainSpecificity"></td>
+                                        <td id="trainSensitivity"></td>
+                                        <td id="trainAUC"></td>
+                                        <td id="trainAcc"></td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                            </div>
+                            <div class="chart-area" id="left_modal_chart" style="height: 30rem">
+                                <svg id="training_cm" width="100%" height="100%"></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-7" style="height: 80%;">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Test</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id = "testing-table" style="margin-bottom: 20px;">
+                                <table class="styled-table" style = "width: 100%; max-width: 100%;">
+                                    <thead>
+                                        <tr>
+                                          <!-- <th rowspan="2">F1</th> -->
+                                          <th colspan="2">Specificity</th>
+                                          <th colspan="2">Sensitivity</th>
+                                          <th colspan="2">AUC</th>
+                                          <th rowspan="2">Accuracy</th>
+                                        </tr>
+                                        <tr>
+                                          <th>Estimate</th>
+                                          <th>95% CI</th>
+                                          <th>Estimate</th>
+                                          <th>95% CI</th>
+                                          <th>Estimate</th>
+                                          <th>95% CI</th>
+                                        </tr>
+                                      </thead>
+                                    <tbody>
+                                      <tr>
+                                        <!-- <td id="testF1"></td> -->
+                                        <td id="testSpecificity"></td>
+                                        <td id="testSpecificityCI"></td>
+                                        <td id="testSensitivity"></td>
+                                        <td id="testSensitivityCI"></td>
+                                        <td id="testAUC"></td>
+                                        <td id="testAUCCI"></td>
+                                        <td id="testAcc"></td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                            </div>
+                            <div class="chart-area" id="right_modal_chart" style="height: 30rem">
+                                <svg id="testing_cm" width="100%" height="100%"></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal" id="nnmodal" style="width:95%; max-width: 95%;">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Evaluation</h6>
+                <a data-close-button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "nnCloseButton" style="min-width: 110px;color: #fff;
+                background-color: #4e73df; border-color: #4e73df;text-align: center; vertical-align: middle;border-radius: .2rem;"><i
+                    class="fas fa-download fa-sm text-white-50"></i> Close</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-6 col-lg-7" style="height: 100%;">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Train</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area" id="left_nn_modal_chart" style="height: 30rem">
+                                <svg id="training_nn" width="100%" height="100%"></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-7" style="height: 80%;">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Test</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area" id="right_nn_modal_chart" style="height: 30rem">
+                                <svg id="testing_nn" width="100%" height="100%"></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal" id="loadingmodal" data-backdrop="static" style="width:15%; max-width: 15%; height:10%; max-height: 10%;">
+        <div class = "card align-items-center" style="margin: auto; text-align: center; height: 100%;">
+            <div class="loading-spinner mb-2 align-items-center" style="margin-top: 7%; text-align: center"></div>
+            <div class = "align-items-center" style="text-align: center">Loading</div>
+        </div>
+      </div>
+      <div class="modal" id="GenerateDatamodal" style="width:60%; max-width: 60%; height: 60%;">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Generate New Data</h6>
+                <a data-close-button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "GenerateDataCloseButton" style="min-width: 110px;color: #fff;
+                background-color: #4e73df; border-color: #4e73df;text-align: center; vertical-align: middle;border-radius: .2rem;"><i
+                    class="fas fa-download fa-sm text-white-50"></i> Close</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-6 col-lg-7" style="height: 100%;">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">CLASS 1</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id = "positive-cov-matrix">
+                                <table class="styled-table"  style="margin-top: 30px;">
+                                    <thead>
+                                        <tr>
+                                          <th colspan="2">Covariance Matrix <br></th>
+                                        </tr>
+                                      </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td><input id="positive-cov-matrix-0" type="number" min = "0" max="5.3" value="0" /></td>
+                                        <td><input id="positive-cov-matrix-1" type="number" min = "-2.6" max="2.6" value="0" /></td>
+                                      </tr>
+                                      <tr>
+                                        <td id="positive-cov-matrix-2">0</td>
+                                        <td><input id="positive-cov-matrix-3" type="number" min = "0" max="4.0"value="0" /></td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                            </div>
+                            <div id = "positive-mu">
+                                <table class="styled-table" style="margin-top: 30px;">
+                                    <thead>
+                                        <tr>
+                                          <th colspan="2">Mu<br></th>
+                                        </tr>
+                                      </thead>
+                                    <tbody>
+                                        <td><input id="positive-mu-0" type="number" min = ".2" max=".8"value="0" /></td>
+                                        <td><input id="positive-mu-1" type="number" min = ".25" max=".4" value="0" /></td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-7" style="height: 80%;">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">CLASS 2</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="pos-form">
+                                <div id = "negative-cov-matrix">
+                                    
+                                    <table class="styled-table"  style="margin-top: 30px;">
+                                        <thead>
+                                            <tr>
+                                            <th colspan="2">Covariance Matrix <br></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td><input id="negative-cov-matrix-0" type="number" min = "0" max="5.3" value="0" /></td>
+                                            <td><input id="negative-cov-matrix-1" type="number" min = "-2.6" max="2.6" value="0" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td id="negative-cov-matrix-2">0</td>
+                                            <td><input id="negative-cov-matrix-3" type="number" min = "0" max="4.0"value="0" /></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id = "negative-mu">
+                                    <table class="styled-table" style="margin-top: 30px;">
+                                        <thead>
+                                            <tr>
+                                            <th colspan="2">Mu<br></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td><input id="negative-mu-0" type="number" min = ".2" max=".8"value="0" /></td>
+                                            <td><input id="negative-mu-1" type="number" min = ".25" max=".4"value="0" /></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="d-sm-flex align-items-center justify-content-between">
+                    <div>
+                        <h6></h6>
+                    </div>
+                    <div class="d-sm-flex align-items-center justify-content-between" style="width: 25%;">
+                        <a data-close-button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "GenerateDistributionButtonInModal" style="min-width: 110px; max-width: 120px;"><i
+                            class="fas fa-download fa-sm text-white-50"></i> Generate Distribution</a>
+                        <a data-close-button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "GenerateNewDataButtonInModal" style="min-width: 110px; max-width: 120px;"><i
+                            lass="fas fa-download fa-sm text-white-50"></i> Randomize<br>Parameters</a>
+                    </div>
+                    </div>
+                
+        </div>
+      </div>
+      <div class="modal" id="HyperParamterModal" style="width:30%; max-width: 60%; height: 50%;">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-EPOcenter justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Choose Hyper Parameters</h6>
+                <a data-close-button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "HyperParameterCloseButton" style="min-width: 110px;color: #fff;
+                background-color: #4e73df; border-color: #4e73df;text-align: center; vertical-align: middle;border-radius: .2rem;"><i
+                    class="fas fa-download fa-sm text-white-50"></i> Close</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-6 col-lg-7" style="height: 100%; max-width: 100%!important; width: 100%!important; flex: none;">
+                    <div class="card shadow mb-4" style="height: 100%; max-width: 100%!important; width: 100%!important;">
+                        <div class="card-body">
+                            <div class="h5 mb-0 font-weight-bold text-gray-600">
+                                <div class="slidecontainer" width = "100%" style = "display: table; margin-bottom: .5rem;">
+                                    <span style="text-align: left; display: table-cell; min-width: 100px;">
+                                        <label for="EPOCHSlider">EPOCHS</label>
+                                    </span>
+                                    <span style="text-align: center; display: table-cell; width: 90%;">
+                                        <input background = "#000000" width = "100%" type="range" min="1" max="500" value="50" class="slider" id="EPOCHSlider" oninput= "EPOCHRange.innerText = this.value">
+                                    </span>
+                                    <span style="text-align: center; display: table-cell; box-sizing: border-box; min-width: 50px;">
+                                        <t  id="EPOCHRange">50</t>
+                                    </span>
+                                </div>
+                                <div class="slidecontainer" width = "100%" style = "display: table; margin-bottom: .5rem;">
+                                    <span style="text-align: left; display: table-cell; min-width: 100px;">
+                                        <label for="LRSlider">Learning Rate</label>
+                                    </span>
+                                    <span style="text-align: center; display: table-cell; width: 90%;">
+                                        <input width = "100%" type="range" min="1" max="100" value="50" class="slider" id="LRSlider" oninput= "LRRange.innerText = this.value/1000">
+                                    </span>
+                                    <span style="text-align: center; display: table-cell; box-sizing: border-box; min-width: 50px;">
+                                        <t  id="LRRange">0.05</t>
+                                    </span>
+                                </div>
+                                <div class="slidecontainer" width = "100%" style = "display: table; margin-bottom: .5rem;">
+                                    <span style="text-align: left; display: table-cell; min-width: 100px;">
+                                        <label for= "LayerSizeSlider">Layer Size</label>
+                                    </span>
+                                    <span style="text-align: center; display: table-cell; width: 90%;">
+                                        <input width = "100%" type="range" min="1" max="100" value="5" class="slider" id="LayerSizeSlider" oninput= "LayerSizeRange.innerText = this.value">
+                                    </span>
+                                    <span style="text-align: center; display: table-cell; box-sizing: border-box; min-width: 50px;">
+                                        <t  id="LayerSizeRange">5</t>
+                                    </span>
+                                </div>
+                                <div class="slidecontainer" width = "100%" style = "display: table; margin-bottom: .5rem;">
+                                    <span style="text-align: left; display: table-cell; min-width: 100px;">
+                                        <label for="NumLayersSlider">Number of Layers</label>
+                                    </span>
+                                    <span style="text-align: center; display: table-cell; width: 90%;">
+                                        <input width = "100%" type="range" min="1" max="10" value="2" class="slider" id="NumLayersSlider" oninput= "NumLayersRange.innerText = this.value">
+                                    </span>
+                                    <span style="text-align: center; display: table-cell; box-sizing: border-box; min-width: 50px;">
+                                        <t  id="NumLayersRange">2</t>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="d-sm-flex align-items-center justify-content-between">
+                    <div>
+                        <h6></h6>
+                    </div>
+                    <div class="d-sm-flex align-items-center justify-content-between" style="width: 25%;">
+                        <a data-close-button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id = "TrainNNInModal" style="min-width: 110px; max-width: 120px;"><i
+                            lass="fas fa-download fa-sm text-white-50"></i> Train Model</a>
+                    </div>
+                    </div>
+                
+        </div>
+      </div>
+      
+    <div id="overlay"></div>
+    <!-- End of Page Wrapper -->
+
+    <!-- JS Scripts-->
+    <script src='{% static "app.js" %}'></script>
+</body>
+
+</html>
