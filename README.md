@@ -6,29 +6,37 @@ AI/ML DEMO is an interactive web tool that helps users to explore and gain hands
 ![Overview](./Figues/Overview.png)
 
 ----
-Below illustrates some example concepts shown for user-selected training/test data points
+Below illustrates some example concepts based on user-selected training/test data points
 
 
-
+<p align="center">
 Linear Discriminant Analysis (High Bias)
+
 ![LDA](./Figues/LDA_all.png)
 
 ---
 
 
-
+<p align="center">
 Deep Neural Network (High Variance)
+
 ![DNN](./Figues/MLP_all.png)
 
----
 
+---
+<p align="center">
 Deep Neural Network (Larger Pool of Training Data)
+
 ![DNN](./Figues/MLP2_all.png)
 
 ---
-
+<p align="center">
 Quadratic Discriminant Analysis 
+
 ![QDA](./Figues/QDA_all.png)
+
+## Author
+Jacob McIntosh
 
 ## Requirenment
 Python 3.10 or higher
