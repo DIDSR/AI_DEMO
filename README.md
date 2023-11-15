@@ -1,7 +1,7 @@
 # AI DEMO (Data Exploration & Model Optimization)
 
 
-AI/ML DEMO is an interactive web tool that helps users to explore and gain hands-on-experience in essetntial concepts in machine learning. This web tool offers interactions with datasets in feature space as well as interactions with machine learning hyper-parameters. Users can explore various concepts in machine learning inlcuding training/test data distribution, under/over fitting, the bias/variance traid-off, neural networks, performance metrics, etc. By interactively engaging with these concepts, non-experts can deepen their understanding and gain practical insights into the world of machine learning.
+AI/ML DEMO is an interactive web tool that helps users to explore and gain hands-on-experience in essential concepts in machine learning. This web tool offers feature space and hyperparameter manipulation allowing users to explore various concepts in machine learning including training/test data distribution, under/over fitting, the bias/variance trade-off, neural networks, performance metrics, etc. By interactively engaging with these concepts, non-experts can deepen their understanding and gain practical insights into the world of machine learning.
 
 ![Overview](./Figues/Overview.png)
 
@@ -18,14 +18,14 @@ Linear Discriminant Analysis (High Bias)
 
 
 <p align="center">
-Deep Neural Network (High Variance)
+Neural Network (High Variance)
 
 ![DNN](./Figues/MLP_all.png)
 
 
 ---
 <p align="center">
-Deep Neural Network (Larger Pool of Training Data)
+Neural Network (Larger Pool of Training Data)
 
 ![DNN](./Figues/MLP2_all.png)
 
@@ -38,7 +38,7 @@ Quadratic Discriminant Analysis
 ## Author
 Jacob McIntosh
 
-## Requirenment
+## Requirements
 Python 3.10 or higher
 
 ## Installation
